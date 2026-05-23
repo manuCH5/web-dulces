@@ -10,12 +10,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
+# PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# 👇 IMPORTANTE: Tailwind/Vite
+# 🔥 FRONTEND (esto es lo importante para tu CSS)
 RUN npm install
 RUN npm run build
 
+# 🔥 limpiar caches Laravel (ok ponerlo aquí)
+RUN php artisan config:clear \
+ && php artisan cache:clear \
+ && php artisan view:clear
+
+# asegurar permisos
 RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
